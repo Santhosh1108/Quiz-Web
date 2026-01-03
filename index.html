@@ -1,20 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>Quiz App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="quiz-container">
+
+  <div class="quiz-container">
     <h1>Quiz App</h1>
+
+    <div class="progress">
+      <div id="progress-bar"></div>
+    </div>
+
     <p id="question"></p>
-    <ul id="options">
-        <h2>Which level </h2>
-      <li><input type="radio" name="option" value="option1" id="option1"><label for="option1" id="option1-label"></label></li>
-      <li><input type="radio" name="option" value="option2" id="option2"><label for="option2" id="option2-label"></label></li>
-      <li><input type="radio" name="option" value="option3" id="option3"><label for="option3" id="option3-label"></label></li>
-      <li><input type="radio" name="option" value="option4" id="option4"><label for="option4" id="option4-label"></label></li>
-    </ul>
-    <button id="submit">Submit</button>
+
+    <ul id="options"></ul>
+
+    <button id="submit" disabled>Submit</button>
+
+    <p id="feedback"></p>
   </div>
 
   <script src="script.js"></script>
