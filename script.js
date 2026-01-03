@@ -1,77 +1,94 @@
 const questions = [
-    {
-      question: "What is the capital of France?",
-      options: ["Paris", "London", "Berlin", "Rome"],
-      answer: 0
-    },
-    {
-      question: "Who painted the Mona Lisa?",
-      options: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
-      answer: 1
-    },
-    {
-      question: "Which planet is known as the Red Planet?",
-      options: ["Mars", "Jupiter", "Venus", "Mercury"],
-      answer: 0
-    }
-  ];
-  
-  const quizContainer = document.getElementById("quiz-container");
-  const questionElement = document.getElementById("question");
-  const optionsElement = document.getElementById("options");
-  const submitButton = document.getElementById("submit");
-  
-  let currentQuestion = 0;
-  let score = 0;
-  
-  function showQuestion() {
-    const question = questions[currentQuestion];
-    questionElement.textContent = question.question;
-    optionsElement.innerHTML = "";
-  
-    for (let i = 0; i < question.options.length; i++) {
-      const li = document.createElement("li");
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = "option";
-      radio.value = "option" + (i + 1);
-      radio.id = "option" + (i + 1);
-  
-      const label = document.createElement("label");
-      label.htmlFor = "option" + (i + 1);
-      label.textContent = question.options[i];
-  
-      li.appendChild(radio);
-      li.appendChild(label);
-      optionsElement.appendChild(li);
-    }
+  {
+    question: "What is the capital of France?",
+    options: ["Paris", "London", "Berlin", "Rome"],
+    answer: 0
+  },
+  {
+    question: "Who painted the Mona Lisa?",
+    options: ["Van Gogh", "Leonardo da Vinci", "Picasso", "Michelangelo"],
+    answer: 1
+  },
+  {
+    question: "Which planet is known as the Red Planet?",
+    options: ["Mars", "Jupiter", "Venus", "Mercury"],
+    answer: 0
   }
-  
-  function checkAnswer() {
-    const selectedOption = document.querySelector('input[name="option"]:checked');
-    if (selectedOption) {
-      const selectedAnswer = parseInt(selectedOption.value);
-      if (selectedAnswer === questions[currentQuestion].answer) {
-        score++;
-      }
-      currentQuestion++;
-      if (currentQuestion < questions.length) {
-        showQuestion();
-      } else {
-        showResult();
-      }
-    }
-  }
-  
-  function showResult() {
-    quizContainer.innerHTML = `
-      <h1>Quiz Completed</h1>
-      <p>Your score: ${score} out of ${questions.length}</p>
-      <button onclick="location.reload()">Restart Quiz</button>
+];
+
+let currentQuestion = 0;
+let score = 0;
+let selectedOption = null;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const submitBtn = document.getElementById("submit");
+const feedbackEl = document.getElementById("feedback");
+const progressBar = document.getElementById("progress-bar");
+
+function loadQuestion() {
+  submitBtn.disabled = true;
+  feedbackEl.textContent = "";
+  selectedOption = null;
+
+  const q = questions[currentQuestion];
+  questionEl.textContent = q.question;
+  optionsEl.innerHTML = "";
+
+  q.options.forEach((option, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <label>
+        <input type="radio" name="option" value="${index}">
+        ${option}
+      </label>
     `;
+
+    li.addEventListener("click", () => {
+      document.querySelectorAll("input[name='option']").forEach(r => r.checked = false);
+      li.querySelector("input").checked = true;
+      selectedOption = index;
+      submitBtn.disabled = false;
+    });
+
+    optionsEl.appendChild(li);
+  });
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const progress = ((currentQuestion) / questions.length) * 100;
+  progressBar.style.width = `${progress}%`;
+}
+
+submitBtn.addEventListener("click", () => {
+  if (selectedOption === questions[currentQuestion].answer) {
+    score++;
+    feedbackEl.textContent = "Correct ✅";
+    feedbackEl.style.color = "#22c55e";
+  } else {
+    feedbackEl.textContent = "Wrong ❌";
+    feedbackEl.style.color = "#ef4444";
   }
-  
-  submitButton.addEventListener("click", checkAnswer);
-  
-  showQuestion();
-  
+
+  setTimeout(() => {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }, 800);
+});
+
+function showResult() {
+  progressBar.style.width = "100%";
+  document.querySelector(".quiz-container").innerHTML = `
+    <h1>Quiz Completed 🎉</h1>
+    <p>Your score: ${score} / ${questions.length}</p>
+    <button onclick="location.reload()">Restart</button>
+  `;
+}
+
+loadQuestion();
