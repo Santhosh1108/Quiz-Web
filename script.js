@@ -1,93 +1,95 @@
-const questions = [
-  {
-    question: "What is the capital of France?",
-    options: ["Paris", "London", "Berlin", "Rome"],
-    answer: 0
-  },
-  {
-    question: "Who painted the Mona Lisa?",
-    options: ["Van Gogh", "Leonardo da Vinci", "Picasso", "Michelangelo"],
-    answer: 1
-  },
-  {
-    question: "Which planet is known as the Red Planet?",
-    options: ["Mars", "Jupiter", "Venus", "Mercury"],
-    answer: 0
-  }
-];
+const level = localStorage.getItem("quizLevel");
+document.getElementById("level-title").textContent =
+  level.charAt(0).toUpperCase() + level.slice(1) + " Level";
 
-let currentQuestion = 0;
+const questionSets = {
+  easy: [
+    { q: "2 + 2 = ?", o: ["3", "4", "5", "6"], a: 1 },
+    { q: "Capital of India?", o: ["Delhi", "Mumbai", "Chennai", "Kolkata"], a: 0 },
+    { q: "Sun rises in?", o: ["West", "North", "East", "South"], a: 2 },
+    // ➜ add 12 more
+  ],
+
+  medium: [
+    { q: "HTML stands for?", o: ["Hyper Tool", "Hyper Text Markup Language", "High Text ML", "None"], a: 1 },
+    { q: "CSS property for bold?", o: ["font-style", "font-weight", "text-bold", "weight"], a: 1 },
+    { q: "JS keyword to declare variable?", o: ["int", "var", "define", "dim"], a: 1 },
+    // ➜ add 12 more
+  ],
+
+  hard: [
+    { q: "Which is not a JS framework?", o: ["React", "Angular", "Vue", "Django"], a: 3 },
+    { q: "Time complexity of binary search?", o: ["O(n)", "O(log n)", "O(n²)", "O(1)"], a: 1 },
+    { q: "HTTP status for unauthorized?", o: ["200", "301", "401", "500"], a: 2 },
+    // ➜ add 12 more
+  ]
+};
+
+const questions = questionSets[level].slice(0, 15);
+
+let current = 0;
 let score = 0;
-let selectedOption = null;
+let selected = null;
 
-const questionEl = document.getElementById("question");
-const optionsEl = document.getElementById("options");
-const submitBtn = document.getElementById("submit");
-const feedbackEl = document.getElementById("feedback");
+const qEl = document.getElementById("question");
+const oEl = document.getElementById("options");
+const submit = document.getElementById("submit");
+const feedback = document.getElementById("feedback");
 const progressBar = document.getElementById("progress-bar");
 
 function loadQuestion() {
-  submitBtn.disabled = true;
-  feedbackEl.textContent = "";
-  selectedOption = null;
+  submit.disabled = true;
+  feedback.textContent = "";
+  selected = null;
 
-  const q = questions[currentQuestion];
-  questionEl.textContent = q.question;
-  optionsEl.innerHTML = "";
+  const q = questions[current];
+  qEl.textContent = q.q;
+  oEl.innerHTML = "";
 
-  q.options.forEach((option, index) => {
+  q.o.forEach((opt, i) => {
     const li = document.createElement("li");
     li.innerHTML = `
       <label>
-        <input type="radio" name="option" value="${index}">
-        ${option}
+        <input type="radio" name="option" />
+        ${opt}
       </label>
     `;
 
-    li.addEventListener("click", () => {
-      document.querySelectorAll("input[name='option']").forEach(r => r.checked = false);
+    li.onclick = () => {
+      document.querySelectorAll("input").forEach(r => r.checked = false);
       li.querySelector("input").checked = true;
-      selectedOption = index;
-      submitBtn.disabled = false;
-    });
+      selected = i;
+      submit.disabled = false;
+    };
 
-    optionsEl.appendChild(li);
+    oEl.appendChild(li);
   });
 
-  updateProgress();
+  progressBar.style.width = `${(current / questions.length) * 100}%`;
 }
 
-function updateProgress() {
-  const progress = ((currentQuestion) / questions.length) * 100;
-  progressBar.style.width = `${progress}%`;
-}
-
-submitBtn.addEventListener("click", () => {
-  if (selectedOption === questions[currentQuestion].answer) {
+submit.onclick = () => {
+  if (selected === questions[current].a) {
     score++;
-    feedbackEl.textContent = "Correct ✅";
-    feedbackEl.style.color = "#22c55e";
+    feedback.textContent = "Correct ✅";
+    feedback.style.color = "#22c55e";
   } else {
-    feedbackEl.textContent = "Wrong ❌";
-    feedbackEl.style.color = "#ef4444";
+    feedback.textContent = "Wrong ❌";
+    feedback.style.color = "#ef4444";
   }
 
   setTimeout(() => {
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
-      loadQuestion();
-    } else {
-      showResult();
-    }
-  }, 800);
-});
+    current++;
+    if (current < questions.length) loadQuestion();
+    else showResult();
+  }, 700);
+};
 
 function showResult() {
-  progressBar.style.width = "100%";
   document.querySelector(".quiz-container").innerHTML = `
-    <h1>Quiz Completed 🎉</h1>
-    <p>Your score: ${score} / ${questions.length}</p>
-    <button onclick="location.reload()">Restart</button>
+    <h1>${level.toUpperCase()} Level Completed 🎉</h1>
+    <p>Your Score: ${score} / ${questions.length}</p>
+    <button onclick="window.location.href='index.html'">Back to Levels</button>
   `;
 }
 
