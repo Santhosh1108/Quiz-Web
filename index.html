@@ -2,28 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Quiz App</title>
+  <title>Select Level</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
   <div class="quiz-container">
-    <h1>Quiz App</h1>
+    <h1>Select Difficulty</h1>
 
-    <div class="progress">
-      <div id="progress-bar"></div>
-    </div>
-
-    <p id="question"></p>
-
-    <ul id="options"></ul>
-
-    <button id="submit" disabled>Submit</button>
-
-    <p id="feedback"></p>
+    <button onclick="startQuiz('easy')">Easy</button>
+    <button onclick="startQuiz('medium')">Medium</button>
+    <button onclick="startQuiz('hard')">Hard</button>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    function startQuiz(level) {
+      localStorage.setItem("quizLevel", level);
+      window.location.href = "quiz.html";
+    }
+  </script>
+
 </body>
 </html>
